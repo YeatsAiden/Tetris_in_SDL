@@ -4,7 +4,7 @@ BIN_NAME := tetris
 BUILD := build
 SOURCE := src
 
-all: $(BUILD)/main.o $(BUILD)/utils.o $(BUILD)/assets.o
+all: $(BUILD)/main.o $(BUILD)/utils.o $(BUILD)/assets.o $(BUILD)/table.o
 	$(CC) $(BUILD)/*.o -o $(BUILD)/$(BIN_NAME) $(FLAGS)
 
 # $^ points to the prerequisite and $@ to the target

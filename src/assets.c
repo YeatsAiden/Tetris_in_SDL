@@ -4,7 +4,7 @@
 
 /*Singleton*/
 typedef struct {
-    SDL_Texture *sprites[];
+    /*SDL_Texture *sprites[];*/
 } SpriteManager;
 
 SDL_Texture *load_bmp_as_texture(SDL_Renderer *renderer, char path[]){

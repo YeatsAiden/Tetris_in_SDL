@@ -1,9 +1,7 @@
-#include "utils.h"
-#include "consts.h"
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_pixels.h>
-#include <SDL2/SDL_render.h>
 #include <stdio.h>
+#include <SDL2/SDL.h>
+#include "consts.h"
+#include "utils.h"
 
 void print_error(char process_name[]) {
     fprintf(stderr, "Something went wrong with %s D:\n", process_name);
