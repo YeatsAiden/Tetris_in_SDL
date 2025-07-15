@@ -34,11 +34,18 @@ void free_value(entry_t *entry){
     }
 }
 
-void free_entry(entry_t *entry){
+entry_t *free_entry(entry_t *entry){
+    entry_t *next_entry = entry->next;
+
     free(entry->key);
     free_value(entry);
-    
-    while (entry)
+    free(entry);
+
+    if (next_entry != NULL){
+        return next_entry;
+    }
+
+    return NULL;
 }
 
 void set_value(entry_t *entry, void *value, unsigned int value_size){
@@ -110,31 +117,34 @@ void *get(hash_table_t *ht, char *key){
     return NULL;
 }
 
-void *delete(hash_table_t *ht, char *key){
+void delete(hash_table_t *ht, char *key){
     unsigned int index = hash(ht, key);
 
     entry_t *entry = ht->entries[index];
 
     if (entry == NULL){
-        return NULL;
+        return;
     }
 
-    entry_t *prev_entry;
+    if (strcmp(key, entry->key) == 0){
+        ht->entries[index] = free_entry(entry);
+        return;
+    }
 
-    while (entry){
-        if (strcmp(key, entry->key) == 0){
-            return entry->value;
+    entry_t *next_entry = entry->next;
+
+    while (next_entry){
+        if (strcmp(key, next_entry->key) == 0){
+            entry->next = free_entry(next_entry);
         }
 
-        prev_entry = entry;
-        entry = entry->next;
+        entry = next_entry;
+        next_entry = next_entry->next;
     }
-
-    return NULL;
 }
 
 void resize(hash_table_t ht, unsigned int length){
-
+    
 }
 
 hash_table_t *init_hashtable(unsigned int (*hash_function)(char *key), unsigned int length){
