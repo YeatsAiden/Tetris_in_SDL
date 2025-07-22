@@ -1,3 +1,4 @@
+#include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 #include <SDL2/SDL.h>
@@ -16,7 +17,7 @@ unsigned int jenkins_one_at_a_time_hash(char *key){
     return hash;
 }
 
-unsigned int hash(hash_table_t *ht, char *key){
+size_t hash(hash_table_t *ht, char *key){
     return ht->hash_function(key) % ht->length;
 }
 
@@ -41,41 +42,42 @@ entry_t *free_entry(entry_t *entry){
     free_value(entry);
     free(entry);
 
-    if (next_entry != NULL){
-        return next_entry;
-    }
-
-    return NULL;
-}
-
-void set_value(entry_t *entry, void *value, unsigned int value_size){
-    entry->value = malloc(value_size);
-    memcpy(entry->value, value, value_size);
+    return next_entry;
 }
 
 void set_key(entry_t *entry, char *key){
     entry->key = malloc(strlen(key) + 1); /* +1 because of the null terminator */
-    strcpy(entry->key, key);
+    if (entry->key != NULL){
+        strcpy(entry->key, key);
+    }
 }
 
-entry_t *pair_value(char *key, void *value, unsigned int value_size, Value_type type){
+entry_t *pair_value(char *key, void *value, Value_type type){
     entry_t *entry = malloc(sizeof(entry_t));
 
-    set_key(entry, key);
-    set_value(entry, value, value_size);
-    entry->next = NULL;
-    entry->type = type;
+    if (entry != NULL){
+        set_key(entry, key);
+        entry->value = value;
+        entry->next = NULL;
+        entry->type = type;
+    }
 
     return entry;
 }
 
-void insert(hash_table_t *ht, char *key, void *value, unsigned int value_size, Value_type type){
-    unsigned int index = hash(ht, key);
+void hash_table_insert(hash_table_t *ht, char *key, void *value, Value_type type){
+
+    if (ht->count / ht->length >= 0.7){
+        /* I'll add resizing later. */
+    }
+
+    size_t index = hash(ht, key);
 
     entry_t *entry = ht->entries[index];
 
     if (entry == NULL){
-        ht->entries[index] = pair_value(key, value, value_size, type);
+        ht->entries[index] = pair_value(key, value, type);
+        ht->count++;
         return;
     }
 
@@ -84,17 +86,19 @@ void insert(hash_table_t *ht, char *key, void *value, unsigned int value_size, V
     while (entry != NULL) {
         if (strcmp(key, entry->key) == 0){
             free_value(entry);
-            set_value(entry, value, value_size);
+            entry->value = value;
             return;
         }
+
         prev_entry = entry;
         entry = entry->next;
     }
 
-    prev_entry->next = pair_value(key, value, value_size, type);
+    prev_entry->next = pair_value(key, value, type);
+    ht->count++;
 }
 
-void *get(hash_table_t *ht, char *key){
+void *hash_table_get(hash_table_t *ht, char *key){
     unsigned int index = hash(ht, key);
 
     entry_t *entry = ht->entries[index];
@@ -117,7 +121,7 @@ void *get(hash_table_t *ht, char *key){
     return NULL;
 }
 
-void delete(hash_table_t *ht, char *key){
+void hash_table_delete(hash_table_t *ht, char *key){
     unsigned int index = hash(ht, key);
 
     entry_t *entry = ht->entries[index];
@@ -136,6 +140,7 @@ void delete(hash_table_t *ht, char *key){
     while (next_entry){
         if (strcmp(key, next_entry->key) == 0){
             entry->next = free_entry(next_entry);
+            return;
         }
 
         entry = next_entry;
@@ -144,21 +149,31 @@ void delete(hash_table_t *ht, char *key){
 }
 
 void resize(hash_table_t ht, unsigned int length){
-    
 }
 
 hash_table_t *init_hashtable(unsigned int (*hash_function)(char *key), unsigned int length){
     hash_table_t *ht = malloc(sizeof(hash_table_t));
 
-    ht->entries = malloc(length * sizeof(entry_t*));
-    for (int i=0;i<length * sizeof(entry_t*);i+=sizeof(entry_t*)){
-        ht->entries[i] = NULL;
+    if (ht != NULL){
+        ht->entries = malloc(length * sizeof(entry_t*));
+        for (int i=0;i<length;i++){
+            ht->entries[i] = NULL;
+        }
+        ht->count = 0;
+        ht->length = length;
+        ht->hash_function = hash_function;
     }
-    ht->count = 0;
-    ht->length = length;
-    ht->hash_function = hash_function;
-    ht->insert = insert;
-    ht->get = get;
 
     return ht;
+}
+
+void hash_table_free(hash_table_t *ht){
+        /* Delete all entries */
+        for (int i=0;i<ht->length;i++){
+            while (ht->entries[i] != NULL){
+                ht->entries[i] = free_entry(ht->entries[i]);
+            }
+        }
+
+        free(ht);
 }

@@ -1,4 +1,5 @@
 #include <SDL2/SDL.h>
+#include <stdio.h>
 #include "consts.h"
 #include "utils.h"
 #include "assets.h"
@@ -12,12 +13,13 @@ int main(int argc, char **argv) {
     create_window(&window);
     create_renderer(window, &renderer);
 
-    SDL_Texture *red_block = load_bmp_as_texture(renderer, "./assets/red.bmp");
-    SDL_Texture *yellow_block = load_bmp_as_texture(renderer, "./assets/yellow.bmp");
-    SDL_Texture *orange_block = load_bmp_as_texture(renderer, "./assets/orange.bmp");
-    SDL_Texture *green_block = load_bmp_as_texture(renderer, "./assets/green.bmp");
-    SDL_Texture *purple_block = load_bmp_as_texture(renderer, "./assets/purple.bmp");
-    SDL_Texture *gray_block = load_bmp_as_texture(renderer, "./assets/gray.bmp");
+    sprite_manager_t *sp_mg = init_sprite_manager(10);
+    sp_mg->load_texture(sp_mg, renderer,  "./assets/red.bmp");
+    sp_mg->load_texture(sp_mg, renderer,  "./assets/yellow.bmp");
+    sp_mg->load_texture(sp_mg, renderer,  "./assets/orange.bmp");
+    sp_mg->load_texture(sp_mg, renderer,  "./assets/green.bmp");
+    sp_mg->load_texture(sp_mg, renderer,  "./assets/purple.bmp");
+    sp_mg->load_texture(sp_mg, renderer,  "./assets/gray.bmp");
 
     int FPS = 120;
     float dt = 1.0/FPS, dt_accumulator = 0;
@@ -35,7 +37,6 @@ int main(int argc, char **argv) {
         while(dt_accumulator >= dt){
             dt_accumulator -= dt;
         }
-
 
         clear_screen(renderer, BLACK);
         SDL_RenderPresent(renderer);

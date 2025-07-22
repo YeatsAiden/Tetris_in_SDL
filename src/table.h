@@ -23,11 +23,12 @@ typedef struct hash_table{
     entry_t **entries;
 
     unsigned int (*hash_function)(char *key);
-    void (*insert)(struct hash_table *ht, char *key, void *value, unsigned int value_size, Value_type type);
-    void* (*get)(struct hash_table *ht, char *key);
 } hash_table_t;
 
 unsigned int jenkins_one_at_a_time_hash(char *key);
 hash_table_t *init_hashtable(unsigned int (*hash_function)(char *key), unsigned int length);
+void hash_table_insert(hash_table_t *ht, char *key, void *value, Value_type type);
+void *hash_table_get(hash_table_t *ht, char *key);
+void hash_table_delete(hash_table_t *ht, char *key);
 
 #endif
