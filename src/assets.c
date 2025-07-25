@@ -41,7 +41,7 @@ char *file_name(char *path){
     return name;
 }
 
-void load_texture(sprite_manager_t *sp_mg, SDL_Renderer *renderer, char *path){
+void sprite_manager_load_texture(sprite_manager_t *sp_mg, SDL_Renderer *renderer, char *path){
     SDL_Texture *texture = load_bmp_as_texture(renderer, path);
     char *name = file_name(path);
 
@@ -49,20 +49,21 @@ void load_texture(sprite_manager_t *sp_mg, SDL_Renderer *renderer, char *path){
     free(name);
 }
 
-SDL_Texture *get_texture(sprite_manager_t *sp_mg, char *key){
+SDL_Texture *sprite_manager_get_texture(sprite_manager_t *sp_mg, char *key){
     return hash_table_get(sp_mg->textures_hash_table, key);
 }
 
-void delete_texture(sprite_manager_t *sp_mg, char *key){
+void sprite_manager_delete_texture(sprite_manager_t *sp_mg, char *key){
     hash_table_delete(sp_mg->textures_hash_table, key);
 }
 
 sprite_manager_t *init_sprite_manager(unsigned int length){
     sprite_manager_t *sp_mg = malloc(sizeof(sprite_manager_t));
 
-    sp_mg->textures_hash_table = init_hashtable(jenkins_one_at_a_time_hash, length);
-    sp_mg->get_texture = get_texture;
-    sp_mg->load_texture = load_texture;
-    sp_mg->delete_texture = delete_texture;
+    if (sp_mg != NULL){
+        sp_mg->textures_hash_table = init_hashtable(jenkins_one_at_a_time_hash, length);
+    }
+
+    return sp_mg;
 }
 

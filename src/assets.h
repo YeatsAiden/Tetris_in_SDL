@@ -7,12 +7,13 @@
 /*Singleton*/
 typedef struct sprite_manager{
     hash_table_t *textures_hash_table;
-    void (*load_texture)(struct sprite_manager *sp_mg, SDL_Renderer *renderer, char *path);
-    SDL_Texture* (*get_texture)(struct sprite_manager *sp_mg, char *key);
-    void (*delete_texture)(struct sprite_manager *sp_mg, char *key);
 } sprite_manager_t;
 
 SDL_Texture *load_bmp_as_texture(SDL_Renderer *renderer, char *path);
 sprite_manager_t *init_sprite_manager(unsigned int length);
+char *file_name(char *path);
+void sprite_manager_load_texture(sprite_manager_t *sp_mg, SDL_Renderer *renderer, char *path);
+SDL_Texture *sprite_manager_get_texture(sprite_manager_t *sp_mg, char *key);
+void sprite_manager_delete_texture(sprite_manager_t *sp_mg, char *key);
 
 #endif

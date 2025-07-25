@@ -1,8 +1,8 @@
-#include <stddef.h>
-#include <stdio.h>
 #include <SDL2/SDL.h>
+#include <stdio.h>
 #include "consts.h"
 #include "utils.h"
+#include "assets.h"
 
 void print_error(char process_name[]) {
     fprintf(stderr, "Something went wrong with %s D:\n", process_name);
@@ -53,12 +53,30 @@ void recieve_input(int *is_running) {
   }
 }
 
-void render_field(SDL_Texture *texture, int field[FIELD_HEIGHT][FIELD_WIDTH]){
-   for(int y=0;y<FIELD_HEIGHT;y++){
+void render_field(SDL_Renderer *renderer, sprite_manager_t *sp_mg, int field[FIELD_HEIGHT][FIELD_WIDTH]){
+    SDL_SetRenderTarget(renderer, NULL);
+    for(int y=0;y<FIELD_HEIGHT;y++){
         for(int x=0;x<FIELD_WIDTH;x++){
+            SDL_Rect rect = {x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE};
+
             switch (field[y][x]) {
                 case 0:
-
+                    SDL_RenderCopy(renderer, sprite_manager_get_texture(sp_mg, "grey"), NULL, &rect);
+                break;
+                case 1:
+                    SDL_RenderCopy(renderer, sprite_manager_get_texture(sp_mg, "red"), NULL, &rect);
+                break;
+                case 2:
+                    SDL_RenderCopy(renderer, sprite_manager_get_texture(sp_mg, "green"), NULL, &rect);
+                break;
+                case 3:
+                    SDL_RenderCopy(renderer, sprite_manager_get_texture(sp_mg, "purple"), NULL, &rect);
+                break;
+                case 4:
+                    SDL_RenderCopy(renderer, sprite_manager_get_texture(sp_mg, "orange"), NULL, &rect);
+                break;
+                case 5:
+                    SDL_RenderCopy(renderer, sprite_manager_get_texture(sp_mg, "yellow"), NULL, &rect);
                 break;
             }
         }

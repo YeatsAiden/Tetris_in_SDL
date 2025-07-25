@@ -11,5 +11,7 @@
 
 #define BLACK (SDL_Color){0, 0, 0, 255}
 
+#define TILE_SIZE 8
+
 #endif
 

@@ -3,13 +3,14 @@
 
 #include <SDL2/SDL.h>
 #include "consts.h"
+#include "assets.h"
 
 void print_error(char process[]);
 int initialize_everything();
 int create_window(SDL_Window **window);
 int create_renderer(SDL_Window *window, SDL_Renderer **renderer);
 void recieve_input(int *is_running);
-void render_field(SDL_Texture *texture, int field[FIELD_HEIGHT][FIELD_WIDTH]);
+void render_field(SDL_Renderer *renderer, sprite_manager_t *sp_mg, int field[FIELD_HEIGHT][FIELD_WIDTH]);
 void clear_screen(SDL_Renderer *renderer, SDL_Color color);
 
 #endif
