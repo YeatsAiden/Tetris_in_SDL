@@ -61,7 +61,7 @@ void render_field(SDL_Renderer *renderer, sprite_manager_t *sp_mg, int field[FIE
 
             switch (field[y][x]) {
                 case 0:
-                    SDL_RenderCopy(renderer, sprite_manager_get_texture(sp_mg, "grey"), NULL, &rect);
+                    SDL_RenderCopy(renderer, sprite_manager_get_texture(sp_mg, "gray"), NULL, &rect);
                 break;
                 case 1:
                     SDL_RenderCopy(renderer, sprite_manager_get_texture(sp_mg, "red"), NULL, &rect);
