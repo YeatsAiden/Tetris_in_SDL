@@ -1,4 +1,5 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_surface.h>
 #include "consts.h"
 #include "utils.h"
 #include "assets.h"
@@ -9,8 +10,10 @@ int main(int argc, char **argv) {
     int is_running = 1;
 
     initialize_everything();
-    create_window(&window);
+    create_window(&window, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
     create_renderer(window, &renderer);
+
+    SDL_Texture *display = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, DISPLAY_WIDTH, DISPLAY_HEIGHT);
 
     sprite_manager_t *sp_mg = init_sprite_manager(10);
     sprite_manager_load_texture(sp_mg, renderer,  "./assets/red.bmp");
@@ -37,8 +40,9 @@ int main(int argc, char **argv) {
             dt_accumulator -= dt;
         }
 
-        clear_screen(renderer, BLACK);
-        render_field(renderer, sp_mg, field);
+        clear_screen(renderer, NULL, BLACK);
+        render_field(renderer, display, sp_mg, field);
+        render_display(renderer, window, display);
         SDL_RenderPresent(renderer);
     }
 

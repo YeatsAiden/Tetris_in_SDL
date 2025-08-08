@@ -4,6 +4,10 @@
 #include "utils.h"
 #include "assets.h"
 
+void *next_aligned_pointer(void *ptr, size_t alignment){
+    return (void *)(((uintptr_t)ptr + (alignment - 1)) & ~(alignment - 1));
+}
+
 void print_error(char process_name[]) {
     fprintf(stderr, "Something went wrong with %s D:\n", process_name);
     fprintf(stderr, "%s", SDL_GetError());
@@ -18,8 +22,8 @@ int initialize_everything() {
   return 0;
 }
 
-int create_window(SDL_Window **window) {
-  *window = SDL_CreateWindow("Test", 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
+int create_window(SDL_Window **window, int flags) {
+  *window = SDL_CreateWindow("Test", 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, flags);
   if (!*window) {
     print_error("creating window");
     return 1;
@@ -53,8 +57,8 @@ void recieve_input(int *is_running) {
   }
 }
 
-void render_field(SDL_Renderer *renderer, sprite_manager_t *sp_mg, int field[FIELD_HEIGHT][FIELD_WIDTH]){
-    SDL_SetRenderTarget(renderer, NULL);
+void render_field(SDL_Renderer *renderer, SDL_Texture *target, sprite_manager_t *sp_mg, int field[FIELD_HEIGHT][FIELD_WIDTH]){
+    SDL_SetRenderTarget(renderer, target);
     for(int y=0;y<FIELD_HEIGHT;y++){
         for(int x=0;x<FIELD_WIDTH;x++){
             SDL_Rect rect = {x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE};
@@ -83,8 +87,30 @@ void render_field(SDL_Renderer *renderer, sprite_manager_t *sp_mg, int field[FIE
    }
 }
 
-void clear_screen(SDL_Renderer *renderer, SDL_Color color){
+void clear_screen(SDL_Renderer *renderer, SDL_Texture *target, SDL_Color color){
     SDL_SetRenderTarget(renderer, NULL);
     SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
     SDL_RenderClear(renderer);
+}
+
+void render_display(SDL_Renderer *renderer, SDL_Window *window, SDL_Texture *display){
+    SDL_SetRenderTarget(renderer, NULL);
+
+    int display_width, display_height, access;
+    Uint32 format;
+    SDL_QueryTexture(display, &format, &access, &display_width, &display_height);
+
+    int window_width, window_height;
+    SDL_GetWindowSize(window, &window_width, &window_height);
+
+    double scale_x = (double) window_width / (double) display_width;
+    double scale_y = (double) window_height / (double) display_height;
+    double min_scale = SDL_min(scale_x, scale_y);
+
+    int to_center_x = (window_width - display_width * min_scale) / 2;
+    int to_center_y = (window_height - display_height * min_scale) / 2;
+
+    SDL_Rect rect = {to_center_x, to_center_y, display_width * min_scale, display_height * min_scale};
+
+    SDL_RenderCopy(renderer, display, NULL, &rect);
 }

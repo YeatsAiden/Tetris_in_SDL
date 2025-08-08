@@ -6,6 +6,9 @@
 #define WINDOW_WIDTH 600
 #define WINDOW_HEIGHT 600
 
+#define DISPLAY_WIDTH 80
+#define DISPLAY_HEIGHT 160
+
 #define FIELD_HEIGHT 20
 #define FIELD_WIDTH 10
 
