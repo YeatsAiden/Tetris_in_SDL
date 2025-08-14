@@ -1,5 +1,5 @@
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_surface.h>
+#include <stdalign.h>
 #include "consts.h"
 #include "utils.h"
 #include "assets.h"

@@ -1,41 +1,49 @@
 #include <stdlib.h>
+#include <string.h>
 #include "lists.h"
+#include "utils.h"
 
-void *init_array(void *self, size_t element_size, size_t length, size_t count){
-    array_header_t *header = malloc(sizeof(array_header_t) + length * element_size);
+void *init_array(void *self, size_t element_size, size_t element_alignment, size_t length, size_t count){
+    // We add element_alignment for some extra space when calculating the next aligned pointer for the array
+    array_header_t *header = malloc(sizeof(array_header_t) + length * element_size + element_alignment);
 
     if (header == NULL) return NULL;
 
     header->count = count;
     header->length = length;
+    header->element_size = element_size;
+    header->element_alignment = element_alignment;
     header->self = self;
 
-    return next_aligned_pointer((void *)(header + 1), element_size);
+    return header;
 }
 
-void append(void *array, void *value){
-    // aaaggghh pointer arithmetic :sob:
-    array_header_t *array_header = array_header(array);
-    size_t count = array_header->count;
-    size_t length = array_header->length;
+void append(array_header_t *header, void *element){
+    size_t count = header->count;
+    size_t length = header->length;
+    size_t element_size = header->element_size;
+    void *arr_ptr = array_pointer(header);
 
     if (count == length){
-        void *new_array = init_array(length * 2, count);
+        array_header_t *new_header = init_array(header->self, element_size, header->element_alignment, length * 2, count);
 
-        memcpy(new_array, array, length * sizeof(array[0]));
+        memcpy(array_pointer(new_header), arr_ptr, length * element_size);
 
-        array->self = new_array;
-        free(array_header);
+        *header->self = new_header;
+        free(header);
+        header = new_header;
     }
 
-    array[count] = value;
-    array_header(array)->count++;
+    arr_ptr = array_pointer(header);
+
+    memcpy((char *)arr_ptr + (count * element_size), element, element_size);
 }
 
-void pop(void *array, size_t index){
-    array_header_t *array_header = ((array_header_t *) array - 1);
-    size_t count = array_header->count;
-    size_t length = array_header->length;
+void pop(array_header_t *header, size_t index){
+    size_t count = header->count;
+    size_t length = header->length;
+    size_t element_size = header->element_size;
+    void *arr_ptr = array_pointer(header);
 
     if (index > count || index < -count){
         fprintf(stderr, "Index out of range: %ld\n", index);
@@ -44,14 +52,10 @@ void pop(void *array, size_t index){
 
     if (index < 0) index = count + index;
 
-    memcpy(void *restrict dest, const void *restrict src, size_t n)
+    if (index == count - 1){
+        char *element_to_delete = (char *)arr_ptr + (index * element_size);
+        memcpy(element_to_delete, element_to_delete + 1, (count - index + 1) * element_size);
+    }
 
-    array_header->count--;
-}
-
-int array = Array(&array, int, 10);
-
-
-for (int i=0;i<20;i++){
-    append(array, i);
+    header->count--;
 }

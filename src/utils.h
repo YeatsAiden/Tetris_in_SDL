@@ -2,7 +2,6 @@
 #define UTILS_H
 
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_render.h>
 #include "consts.h"
 #include "assets.h"
 
