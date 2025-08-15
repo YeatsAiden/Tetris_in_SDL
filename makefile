@@ -3,7 +3,7 @@ FLAGS := -Wall -std=c11 -lSDL2
 BIN_NAME := tetris
 BUILD := build
 SOURCE := src
-OBJECT_FILES := $(BUILD)/main.o $(BUILD)/utils.o $(BUILD)/assets.o $(BUILD)/table.o $(BUILD)/parse.o $(BUILD)/lists.o
+OBJECT_FILES := $(BUILD)/main.o $(BUILD)/utils.o $(BUILD)/assets.o $(BUILD)/table.o $(BUILD)/parse.o $(BUILD)/lists.o $(BUILD)/input.o $(BUILD)/game.o
 
 all: $(OBJECT_FILES)
 	$(CC) $(BUILD)/*.o -o $(BUILD)/$(BIN_NAME) $(FLAGS)

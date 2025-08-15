@@ -1,11 +1,11 @@
 #include <SDL2/SDL.h>
 #include <stdio.h>
 #include <string.h>
+
 #include "assets.h"
 #include "utils.h"
 #include "table.h"
 #include "parse.h"
-
 
 SDL_Texture *load_bmp_as_texture(SDL_Renderer *renderer, char *path){
     SDL_Surface *image = SDL_LoadBMP(path);
@@ -66,4 +66,3 @@ sprite_manager_t *init_sprite_manager(unsigned int length){
 
     return sp_mg;
 }
-
