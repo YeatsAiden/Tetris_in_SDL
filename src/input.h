@@ -1,7 +1,7 @@
 #ifndef INPUT_H
 #define INPUT_H
 
-#include "lists.h"
+#include "list.h"
 
 typedef struct input_manager {
     array_header_t *events_header;

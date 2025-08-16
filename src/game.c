@@ -33,3 +33,5 @@ void render_field(SDL_Renderer *renderer, SDL_Texture *target, sprite_manager_t 
         }
    }
 }
+
+

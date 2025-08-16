@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
-#include "lists.h"
+#include "list.h"
 #include "utils.h"
 
 void *init_array(void *self, size_t element_size, size_t element_alignment, size_t length, size_t count){
