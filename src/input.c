@@ -17,6 +17,11 @@ input_manager_t *init_input_manager(void){
     return in_mg;
 }
 
+void destroy_input_manager(void){
+    free(in_mg->events_header);
+    free(in_mg);
+}
+
 uint8_t poll_events(void){
     SDL_Event event;
     uint8_t flags = 0;
@@ -38,4 +43,3 @@ uint8_t poll_events(void){
 
     return flags;
 }
-

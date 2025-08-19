@@ -4,6 +4,7 @@
 
 #include "consts.h"
 #include "utils.h"
+#include "parse.h"
 
 void *next_aligned_pointer(void *ptr, size_t alignment){
     return (void *)(((uintptr_t)ptr + (alignment - 1)) & ~(alignment - 1));
@@ -45,6 +46,41 @@ SDL_Surface *copy_surface(SDL_Surface *surface){
     SDL_Surface *copy = SDL_CreateRGBSurfaceWithFormat(0, surface->w, surface->h, surface->format->BitsPerPixel, surface->format->format);
     SDL_BlitSurface(surface, NULL, copy, NULL);
     return copy;
+}
+
+SDL_Texture *load_bmp_as_texture(SDL_Renderer *renderer, char *path){
+    SDL_Surface *image = SDL_LoadBMP(path);
+    SDL_Texture *texture = NULL;
+
+    if (!image) {
+        print_error("loading image");
+    } else {
+        texture = SDL_CreateTextureFromSurface(renderer, image);
+
+        if (!texture) {
+            print_error("loading texture");
+        }
+    }
+
+    SDL_FreeSurface(image);
+    return texture;
+}
+
+// Must be a file path with an extension, otherwise will not work
+char *get_file_name(char *path){
+    size_t splits = times_found(path, "/") + 1;
+
+    char *temp = strdup(path);
+    char *token = strtok(temp, "/.");
+    while (splits != 2 && token != NULL){
+        token = strtok(NULL, "/.");
+        splits--;
+    }
+
+    char *name = strdup(token);
+    free(temp);
+
+    return name;
 }
 
 void clear_screen(SDL_Renderer *renderer, SDL_Texture *target, SDL_Color color){

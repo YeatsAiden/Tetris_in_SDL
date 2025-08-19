@@ -30,5 +30,6 @@ hash_table_t *init_hashtable(unsigned int (*hash_function)(char *key), unsigned 
 void hash_table_insert(hash_table_t *ht, char *key, void *value, Value_type type);
 void *hash_table_get(hash_table_t *ht, char *key);
 void hash_table_delete(hash_table_t *ht, char *key);
+void free_hash_table(hash_table_t *ht);
 
 #endif

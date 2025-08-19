@@ -16,9 +16,6 @@ typedef struct data_manager{
 extern sprite_manager_t *sp_mg;
 extern data_manager_t *dt_mg;
 
-SDL_Texture *load_bmp_as_texture(SDL_Renderer *renderer, char *path);
-char *file_name(char *path);
-
 sprite_manager_t *init_sprite_manager(unsigned int length);
 void sprite_manager_load_texture(SDL_Renderer *renderer, char *path);
 SDL_Texture *sprite_manager_get_texture(char *key);

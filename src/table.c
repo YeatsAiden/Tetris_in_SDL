@@ -145,17 +145,6 @@ void hash_table_delete(hash_table_t *ht, char *key){
     }
 }
 
-void hash_table_free(hash_table_t *ht){
-        /* Delete all entries */
-        for (int i=0;i<ht->length;i++){
-            while (ht->entries[i] != NULL){
-                ht->entries[i] = free_entry(ht->entries[i]);
-            }
-        }
-
-        free(ht);
-}
-
 hash_table_t *init_hashtable(unsigned int (*hash_function)(char *key), unsigned int length){
     hash_table_t *ht = malloc(sizeof(hash_table_t));
 
@@ -170,5 +159,16 @@ hash_table_t *init_hashtable(unsigned int (*hash_function)(char *key), unsigned 
     }
 
     return ht;
+}
+
+void free_hash_table(hash_table_t *ht){
+    /* Delete all entries */
+    for (int i=0;i<ht->length;i++){
+        while (ht->entries[i] != NULL){
+            ht->entries[i] = free_entry(ht->entries[i]);
+        }
+    }
+
+    free(ht);
 }
 
