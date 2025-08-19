@@ -35,6 +35,8 @@ int main(int argc, char **argv) {
     sprite_manager_load_texture(renderer,  "./assets/images/green.bmp");
     sprite_manager_load_texture(renderer,  "./assets/images/purple.bmp");
     sprite_manager_load_texture(renderer,  "./assets/images/gray.bmp");
+    sprite_manager_load_texture(renderer,  "./assets/images/dark_blue.bmp");
+    sprite_manager_load_texture(renderer,  "./assets/images/light_blue.bmp");
 
     int FPS = 120;
     double dt = 1.0/FPS, dt_accumulator = 0;
