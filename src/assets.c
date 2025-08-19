@@ -87,7 +87,7 @@ void load_tetromino(char *path){
     free(name);
 }
 
-uint32_t *get_tetromino(char *key){
-    return (uint32_t *)hash_table_get(dt_mg->data, key);
+uint32_t *get_tetromino(char *tetromino){
+    return (uint32_t *)hash_table_get(dt_mg->data, tetromino);
 }
 

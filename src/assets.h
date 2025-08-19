@@ -23,5 +23,6 @@ void sprite_manager_delete_texture(char *key);
 
 data_manager_t *init_data_manager(unsigned int length);
 void load_tetromino(char *path);
+uint32_t *get_tetromino(char *tetromino);
 
 #endif

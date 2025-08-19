@@ -49,7 +49,7 @@ void set_key(entry_t *entry, char *key){
     }
 }
 
-entry_t *pair_value(char *key, void *value, Value_type type){
+entry_t *pair_value(char *key, void *value, Value_Type_t type){
     entry_t *entry = malloc(sizeof(entry_t));
 
     if (entry != NULL){
@@ -62,7 +62,7 @@ entry_t *pair_value(char *key, void *value, Value_type type){
     return entry;
 }
 
-void hash_table_insert(hash_table_t *ht, char *key, void *value, Value_type type){
+void hash_table_insert(hash_table_t *ht, char *key, void *value, Value_Type_t type){
 
     if (ht->count / ht->length >= 0.7){
         /* I'll add resizing later. */
