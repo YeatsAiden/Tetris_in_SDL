@@ -17,15 +17,24 @@ int main(int argc, char **argv) {
 
     SDL_Texture *display = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, DISPLAY_WIDTH, DISPLAY_HEIGHT);
 
-    input_manager_t *in_mg = init_input_manager();
+    init_input_manager();
 
-    sprite_manager_t *sp_mg = init_sprite_manager(10);
-    sprite_manager_load_texture(sp_mg, renderer,  "./assets/red.bmp");
-    sprite_manager_load_texture(sp_mg, renderer,  "./assets/yellow.bmp");
-    sprite_manager_load_texture(sp_mg, renderer,  "./assets/orange.bmp");
-    sprite_manager_load_texture(sp_mg, renderer,  "./assets/green.bmp");
-    sprite_manager_load_texture(sp_mg, renderer,  "./assets/purple.bmp");
-    sprite_manager_load_texture(sp_mg, renderer,  "./assets/gray.bmp");
+    init_data_manager(7);
+    load_tetromino("./assets/data/T.txt");
+    load_tetromino("./assets/data/O.txt");
+    load_tetromino("./assets/data/L.txt");
+    load_tetromino("./assets/data/J.txt");
+    load_tetromino("./assets/data/Z.txt");
+    load_tetromino("./assets/data/S.txt");
+    load_tetromino("./assets/data/I.txt");
+
+    init_sprite_manager(10);
+    sprite_manager_load_texture(renderer,  "./assets/images/red.bmp");
+    sprite_manager_load_texture(renderer,  "./assets/images/yellow.bmp");
+    sprite_manager_load_texture(renderer,  "./assets/images/orange.bmp");
+    sprite_manager_load_texture(renderer,  "./assets/images/green.bmp");
+    sprite_manager_load_texture(renderer,  "./assets/images/purple.bmp");
+    sprite_manager_load_texture(renderer,  "./assets/images/gray.bmp");
 
     int FPS = 120;
     double dt = 1.0/FPS, dt_accumulator = 0;
@@ -35,7 +44,7 @@ int main(int argc, char **argv) {
     int field[FIELD_HEIGHT][FIELD_WIDTH] = {0};
 
     while(~flags & 1){
-        flags = poll_events(in_mg);
+        flags = poll_events();
 
         current_time = SDL_GetPerformanceCounter();
         dt_accumulator += (current_time - previous_time) / (float) SDL_GetPerformanceFrequency();
@@ -46,7 +55,7 @@ int main(int argc, char **argv) {
         }
 
         clear_screen(renderer, NULL, BLACK);
-        render_field(renderer, display, sp_mg, field);
+        render_field(renderer, display, field);
         render_display(renderer, window, display);
         SDL_RenderPresent(renderer);
     }

@@ -1,4 +1,5 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_surface.h>
 #include <stdio.h>
 
 #include "consts.h"
@@ -38,6 +39,12 @@ int create_renderer(SDL_Window *window, SDL_Renderer **renderer) {
     return 1;
   }
   return 0;
+}
+
+SDL_Surface *copy_surface(SDL_Surface *surface){
+    SDL_Surface *copy = SDL_CreateRGBSurfaceWithFormat(0, surface->w, surface->h, surface->format->BitsPerPixel, surface->format->format);
+    SDL_BlitSurface(surface, NULL, copy, NULL);
+    return copy;
 }
 
 void clear_screen(SDL_Renderer *renderer, SDL_Texture *target, SDL_Color color){

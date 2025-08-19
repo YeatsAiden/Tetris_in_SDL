@@ -6,14 +6,25 @@
 
 /*Singleton*/
 typedef struct sprite_manager{
-    hash_table_t *textures_hash_table;
+    hash_table_t *textures;
 } sprite_manager_t;
 
+typedef struct data_manager{
+    hash_table_t *data;
+} data_manager_t;
+
+extern sprite_manager_t *sp_mg;
+extern data_manager_t *dt_mg;
+
 SDL_Texture *load_bmp_as_texture(SDL_Renderer *renderer, char *path);
-sprite_manager_t *init_sprite_manager(unsigned int length);
 char *file_name(char *path);
-void sprite_manager_load_texture(sprite_manager_t *sp_mg, SDL_Renderer *renderer, char *path);
-SDL_Texture *sprite_manager_get_texture(sprite_manager_t *sp_mg, char *key);
-void sprite_manager_delete_texture(sprite_manager_t *sp_mg, char *key);
+
+sprite_manager_t *init_sprite_manager(unsigned int length);
+void sprite_manager_load_texture(SDL_Renderer *renderer, char *path);
+SDL_Texture *sprite_manager_get_texture(char *key);
+void sprite_manager_delete_texture(char *key);
+
+data_manager_t *init_data_manager(unsigned int length);
+void load_tetromino(char *path);
 
 #endif

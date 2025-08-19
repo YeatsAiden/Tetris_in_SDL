@@ -4,13 +4,10 @@
 #include "input.h"
 #include "list.h"
 
-typedef struct input_manager {
-    array_header_t *events_header;
-    SDL_Event *events_list;
-} input_manager_t;
+input_manager_t *in_mg = NULL;
 
 input_manager_t *init_input_manager(void){
-    input_manager_t *in_mg = malloc(sizeof(input_manager_t));
+    in_mg = malloc(sizeof(input_manager_t));
 
     if (in_mg == NULL) return NULL;
 
@@ -20,7 +17,7 @@ input_manager_t *init_input_manager(void){
     return in_mg;
 }
 
-uint8_t poll_events(input_manager_t *in_mg){
+uint8_t poll_events(void){
     SDL_Event event;
     uint8_t flags = 0;
     reset_array(in_mg->events_header);
@@ -41,3 +38,4 @@ uint8_t poll_events(input_manager_t *in_mg){
 
     return flags;
 }
+

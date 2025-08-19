@@ -8,7 +8,9 @@ typedef struct input_manager {
     SDL_Event *events_list;
 } input_manager_t;
 
+extern input_manager_t *in_mg;
+
 input_manager_t *init_input_manager(void);
-uint8_t poll_events(input_manager_t *in_mg);
+uint8_t poll_events();
 
 #endif
