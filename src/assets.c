@@ -7,52 +7,52 @@
 #include "utils.h"
 #include "table.h"
 
-sprite_manager_t *sp_mg = NULL;
+sprite_manager_t *sprite_mg = NULL;
 
-data_manager_t *dt_mg = NULL;
+data_manager_t *data_mg = NULL;
 
 sprite_manager_t *init_sprite_manager(unsigned int length){
-    sp_mg = malloc(sizeof(sprite_manager_t));
+    sprite_mg = malloc(sizeof(sprite_manager_t));
 
-    if (sp_mg != NULL){
-        sp_mg->textures = init_hashtable(jenkins_one_at_a_time_hash, length);
+    if (sprite_mg != NULL){
+        sprite_mg->textures = init_hashtable(jenkins_one_at_a_time_hash, length);
     }
 
-    return sp_mg;
+    return sprite_mg;
 }
 
 void destroy_sprite_manager(void){
-    free_hash_table(sp_mg->textures);
+    free_hash_table(sprite_mg->textures);
 }
 
 void sprite_manager_load_texture(SDL_Renderer *renderer, char *path){
     SDL_Texture *texture = load_bmp_as_texture(renderer, path);
     char *name = get_file_name(path);
 
-    hash_table_insert(sp_mg->textures, name, texture, TEXTURE);
+    hash_table_insert(sprite_mg->textures, name, texture, TEXTURE);
     free(name);
 }
 
 SDL_Texture *sprite_manager_get_texture(char *key){
-    return hash_table_get(sp_mg->textures, key);
+    return hash_table_get(sprite_mg->textures, key);
 }
 
 void sprite_manager_delete_texture(char *key){
-    hash_table_delete(sp_mg->textures, key);
+    hash_table_delete(sprite_mg->textures, key);
 }
 
 data_manager_t *init_data_manager(unsigned int length){
-    dt_mg = malloc(sizeof(data_manager_t));
+    data_mg = malloc(sizeof(data_manager_t));
 
-    if (dt_mg != NULL){
-        dt_mg->data = init_hashtable(jenkins_one_at_a_time_hash, length);
+    if (data_mg != NULL){
+        data_mg->data = init_hashtable(jenkins_one_at_a_time_hash, length);
     }
 
-    return dt_mg;
+    return data_mg;
 }
 
 void destroy_data_manager(void){
-    free_hash_table(dt_mg->data);
+    free_hash_table(data_mg->data);
 }
 
 void load_tetromino(char *path){
@@ -82,12 +82,12 @@ void load_tetromino(char *path){
 
     fclose(ptr);
 
-    hash_table_insert(dt_mg->data, name, rotations, OTHER);
+    hash_table_insert(data_mg->data, name, rotations, OTHER);
 
     free(name);
 }
 
-uint32_t *get_tetromino(char *tetromino){
-    return (uint32_t *)hash_table_get(dt_mg->data, tetromino);
+uint32_t *get_tetromino_rotations(char *tetromino){
+    return (uint32_t *)hash_table_get(data_mg->data, tetromino);
 }
 

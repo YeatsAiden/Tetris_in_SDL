@@ -1,9 +1,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include "list.h"
-#include "utils.h"
 
-void *init_array(void *self, size_t element_size, size_t element_alignment, size_t length, size_t count){
+void *init_array(void *self, int element_size, int element_alignment, int length, int count){
     // We add element_alignment for some extra space when calculating the next aligned pointer for the array
     array_header_t *header = malloc(sizeof(array_header_t) + length * element_size + element_alignment);
 
@@ -19,9 +18,9 @@ void *init_array(void *self, size_t element_size, size_t element_alignment, size
 }
 
 void append(array_header_t *header, void *element){
-    size_t count = header->count;
-    size_t length = header->length;
-    size_t element_size = header->element_size;
+    int count = header->count;
+    int length = header->length;
+    int element_size = header->element_size;
     void *arr_ptr = Array_Pointer(header);
 
     if (count == length){
@@ -40,14 +39,13 @@ void append(array_header_t *header, void *element){
     header->count++;
 }
 
-void pop(array_header_t *header, size_t index){
-    size_t count = header->count;
-    size_t length = header->length;
-    size_t element_size = header->element_size;
+void pop(array_header_t *header, int index){
+    int count = header->count;
+    int element_size = header->element_size;
     void *arr_ptr = Array_Pointer(header);
 
-    if (index > count || index < -count){
-        fprintf(stderr, "Index out of range: %ld\n", index);
+    if (index >= count || -index >= count){
+        fprintf(stderr, "Index out of range: %ld, and count: %ld\n", index, count);
         return;
     }
 
@@ -59,6 +57,18 @@ void pop(array_header_t *header, size_t index){
     }
 
     header->count--;
+}
+
+int includes(array_header_t *header, void *element){
+    int count = header->count;
+    int element_size = header->element_size;
+    void *arr_ptr = Array_Pointer(header);
+    
+    for (int i=0;i<count;i++){
+        if ( memcmp(((char *)arr_ptr) + (i * element_size), element, element_size) == 0) return 1;
+    }
+
+    return 0;
 }
 
 void reset_array(array_header_t *header){

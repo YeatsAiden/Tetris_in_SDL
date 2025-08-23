@@ -1,15 +1,19 @@
 #include <SDL2/SDL.h>
+#include <time.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 #include "consts.h"
 #include "utils.h"
 #include "assets.h"
-#include "input.h"
+#include "event.h"
 #include "game.h"
 
 int main(int argc, char **argv) {
     SDL_Window *window = NULL;
     SDL_Renderer *renderer = NULL;
+
+    srand(time(NULL));
 
     initialize_everything();
     create_window(&window, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
@@ -17,7 +21,7 @@ int main(int argc, char **argv) {
 
     SDL_Texture *display = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, DISPLAY_WIDTH, DISPLAY_HEIGHT);
 
-    init_input_manager();
+    init_event_manager();
 
     init_data_manager(7);
     load_tetromino("./assets/data/T.txt");
@@ -28,7 +32,7 @@ int main(int argc, char **argv) {
     load_tetromino("./assets/data/S.txt");
     load_tetromino("./assets/data/I.txt");
 
-    init_sprite_manager(10);
+    init_sprite_manager(8);
     sprite_manager_load_texture(renderer,  "./assets/images/red.bmp");
     sprite_manager_load_texture(renderer,  "./assets/images/yellow.bmp");
     sprite_manager_load_texture(renderer,  "./assets/images/orange.bmp");
@@ -41,27 +45,42 @@ int main(int argc, char **argv) {
     int FPS = 120;
     double dt = 1.0/FPS, dt_accumulator = 0;
     unsigned int previous_time = 0, current_time = 0;
-    uint8_t flags = 0;
+    uint16_t input = 0;
 
+    init_sack(); 
     int field[FIELD_HEIGHT][FIELD_WIDTH] = {0};
+    tetromino_t current_tetromino = choose_tetromino();
+    size_t level = 1;
+    size_t lines_cleared = 0;
 
-    while(~flags & 1){
-        flags = poll_events();
+    while(is_done(input)){
+        poll_events();
+        input = recieve_input();
 
         current_time = SDL_GetPerformanceCounter();
         dt_accumulator += (current_time - previous_time) / (float) SDL_GetPerformanceFrequency();
         previous_time = current_time;
 
         while(dt_accumulator >= dt){
+            if (the_sack->count <= 3) restock_the_sack();
+
+            if (can_tetromino_move(level)){
+                
+            }
+
             dt_accumulator -= dt;
         }
 
         clear_screen(renderer, NULL, BLACK);
         render_field(renderer, display, field);
+
         render_display(renderer, window, display);
         SDL_RenderPresent(renderer);
     }
 
+    destroy_sprite_manager();
+    destroy_data_manager();
+    destroy_event_manager();
     SDL_DestroyWindow(window);
     SDL_DestroyRenderer(renderer);
     SDL_Quit();
