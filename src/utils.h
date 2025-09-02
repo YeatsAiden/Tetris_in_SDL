@@ -5,6 +5,8 @@
 #include "consts.h"
 #include "assets.h"
 
+#define BIT_VALUE(NUM, N) (((NUM)>>(N)) & 0b1)
+
 void *next_aligned_pointer(void *ptr, size_t alignment);
 
 void print_error(char process[]);

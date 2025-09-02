@@ -2,19 +2,36 @@
 #define INPUT_H
 
 #include "list.h"
+#include <stdint.h>
 
-#define is_done(input) ~input & (1 << 7)
+typedef enum Input {
+    INPUT_QUIT,
+    INPUT_Z_KEY,
+    INPUT_X_KEY,
+    INPUT_RIGHT,
+    INPUT_LEFT,
+    INPUT_UP,
+    INPUT_DOWN,
+} Input;
 
-typedef struct event_manager {
-    array_header_t *events_header;
+#define IS_DOWN(input) ~input & INPUT_QUIT
+
+typedef struct EventManager {
+    ArrayHeader *events_header;
     SDL_Event *events_list;
-} event_manager_t;
+    ArrayHeader *inputs;
+} EventManager;
 
-extern event_manager_t *event_mg;
+typedef struct InputEvent {
+    Input input;
+    Uint64 time_stamp;
+} InputEvent;
 
-event_manager_t *init_event_manager(void);
+extern EventManager *event_mg;
+
+EventManager *init_event_manager(void);
 void destroy_event_manager(void);
 void poll_events(void);
-uint16_t recieve_input();
+void recieve_input(void);
 
 #endif

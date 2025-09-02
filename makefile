@@ -1,5 +1,5 @@
 CC := gcc
-FLAGS := -Wall -std=c11 -lSDL2 -lm
+FLAGS := -Wall -Wextra -std=c11 -lSDL2 -lm
 BIN_NAME := tetris
 BUILD := build
 SOURCE := src

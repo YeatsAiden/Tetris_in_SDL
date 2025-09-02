@@ -4,7 +4,7 @@
 
 void *init_array(void *self, int element_size, int element_alignment, int length, int count){
     // We add element_alignment for some extra space when calculating the next aligned pointer for the array
-    array_header_t *header = malloc(sizeof(array_header_t) + length * element_size + element_alignment);
+    ArrayHeader *header = malloc(sizeof(ArrayHeader) + length * element_size + element_alignment);
 
     if (header == NULL) return NULL;
 
@@ -17,14 +17,14 @@ void *init_array(void *self, int element_size, int element_alignment, int length
     return header;
 }
 
-void append(array_header_t *header, void *element){
+void append(ArrayHeader *header, void *element){
     int count = header->count;
     int length = header->length;
     int element_size = header->element_size;
     void *arr_ptr = Array_Pointer(header);
 
     if (count == length){
-        array_header_t *new_header = init_array(header->self, element_size, header->element_alignment, length * 2, count);
+        ArrayHeader *new_header = init_array(header->self, element_size, header->element_alignment, length * 2, count);
 
         memcpy(Array_Pointer(new_header), arr_ptr, length * element_size);
 
@@ -39,13 +39,13 @@ void append(array_header_t *header, void *element){
     header->count++;
 }
 
-void pop(array_header_t *header, int index){
+void pop(ArrayHeader *header, int index){
     int count = header->count;
     int element_size = header->element_size;
     void *arr_ptr = Array_Pointer(header);
 
     if (index >= count || -index >= count){
-        fprintf(stderr, "Index out of range: %ld, and count: %ld\n", index, count);
+        fprintf(stderr, "Index out of range: %d, and count: %d\n", index, count);
         return;
     }
 
@@ -59,7 +59,9 @@ void pop(array_header_t *header, int index){
     header->count--;
 }
 
-int includes(array_header_t *header, void *element){
+int compare
+
+int includes(ArrayHeader *header, void *element){
     int count = header->count;
     int element_size = header->element_size;
     void *arr_ptr = Array_Pointer(header);
@@ -71,6 +73,18 @@ int includes(array_header_t *header, void *element){
     return 0;
 }
 
-void reset_array(array_header_t *header){
+int find_first(ArrayHeader *header, void *element){
+    int count = header->count;
+    int element_size = header->element_size;
+    void *arr_ptr = Array_Pointer(header);
+    
+    for (int i=0;i<count;i++){
+        if ( memcmp(((char *)arr_ptr) + (i * element_size), element, element_size) == 0) return i;
+    }
+
+    return 0;
+}
+
+void reset_array(ArrayHeader *header){
     header->count = 0;
 }

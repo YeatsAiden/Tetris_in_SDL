@@ -1,8 +1,8 @@
 #include <SDL2/SDL.h>
 #include "table.h"
 
-unsigned int jenkins_one_at_a_time_hash(char *key){
-    unsigned int hash = 0;
+size_t jenkins_one_at_a_time_hash(char *key){
+    size_t hash = 0;
     for (int i=0;i<strlen(key);i++){
         hash += key[i];
         hash += hash << 10;
@@ -14,11 +14,11 @@ unsigned int jenkins_one_at_a_time_hash(char *key){
     return hash;
 }
 
-size_t hash(hash_table_t *ht, char *key){
+size_t hash(HashTable *ht, char *key){
     return ht->hash_function(key) % ht->length;
 }
 
-void free_value(entry_t *entry){
+void free_value(Entry *entry){
     switch (entry->type) { 
         case SURFACE:
             SDL_FreeSurface(entry->value);
@@ -32,8 +32,8 @@ void free_value(entry_t *entry){
     }
 }
 
-entry_t *free_entry(entry_t *entry){
-    entry_t *next_entry = entry->next;
+Entry *free_entry(Entry *entry){
+    Entry *next_entry = entry->next;
 
     free(entry->key);
     free_value(entry);
@@ -42,15 +42,15 @@ entry_t *free_entry(entry_t *entry){
     return next_entry;
 }
 
-void set_key(entry_t *entry, char *key){
+void set_key(Entry *entry, char *key){
     entry->key = malloc(strlen(key) + 1); /* +1 because of the null terminator */
     if (entry->key != NULL){
         strcpy(entry->key, key);
     }
 }
 
-entry_t *pair_value(char *key, void *value, Value_Type_t type){
-    entry_t *entry = malloc(sizeof(entry_t));
+Entry *pair_value(char *key, void *value, ValueType type){
+    Entry *entry = malloc(sizeof(Entry));
 
     if (entry != NULL){
         set_key(entry, key);
@@ -62,7 +62,7 @@ entry_t *pair_value(char *key, void *value, Value_Type_t type){
     return entry;
 }
 
-void hash_table_insert(hash_table_t *ht, char *key, void *value, Value_Type_t type){
+void hash_table_insert(HashTable *ht, char *key, void *value, ValueType type){
 
     if (ht->count / ht->length >= 0.7){
         /* I'll add resizing later. */
@@ -70,7 +70,7 @@ void hash_table_insert(hash_table_t *ht, char *key, void *value, Value_Type_t ty
 
     size_t index = hash(ht, key);
 
-    entry_t *entry = ht->entries[index];
+    Entry *entry = ht->entries[index];
 
     if (entry == NULL){
         ht->entries[index] = pair_value(key, value, type);
@@ -78,7 +78,7 @@ void hash_table_insert(hash_table_t *ht, char *key, void *value, Value_Type_t ty
         return;
     }
 
-    entry_t *prev_entry;
+    Entry *prev_entry;
 
     while (entry != NULL) {
         if (strcmp(key, entry->key) == 0){
@@ -95,16 +95,16 @@ void hash_table_insert(hash_table_t *ht, char *key, void *value, Value_Type_t ty
     ht->count++;
 }
 
-void *hash_table_get(hash_table_t *ht, char *key){
+void *hash_table_get(HashTable *ht, char *key){
     unsigned int index = hash(ht, key);
 
-    entry_t *entry = ht->entries[index];
+    Entry *entry = ht->entries[index];
 
     if (entry == NULL){
         return NULL;
     }
 
-    entry_t *prev_entry;
+    Entry *prev_entry;
 
     while (entry != NULL){
         if (strcmp(key, entry->key) == 0){
@@ -118,10 +118,10 @@ void *hash_table_get(hash_table_t *ht, char *key){
     return NULL;
 }
 
-void hash_table_delete(hash_table_t *ht, char *key){
+void hash_table_delete(HashTable *ht, char *key){
     unsigned int index = hash(ht, key);
 
-    entry_t *entry = ht->entries[index];
+    Entry *entry = ht->entries[index];
 
     if (entry == NULL){
         return;
@@ -132,7 +132,7 @@ void hash_table_delete(hash_table_t *ht, char *key){
         return;
     }
 
-    entry_t *next_entry = entry->next;
+    Entry *next_entry = entry->next;
 
     while (next_entry){
         if (strcmp(key, next_entry->key) == 0){
@@ -145,11 +145,11 @@ void hash_table_delete(hash_table_t *ht, char *key){
     }
 }
 
-hash_table_t *init_hashtable(unsigned int (*hash_function)(char *key), unsigned int length){
-    hash_table_t *ht = malloc(sizeof(hash_table_t));
+HashTable *init_hashtable(size_t (*hash_function)(char *key), size_t length){
+    HashTable *ht = malloc(sizeof(HashTable));
 
     if (ht != NULL){
-        ht->entries = malloc(length * sizeof(entry_t*));
+        ht->entries = malloc(length * sizeof(Entry*));
         for (int i=0;i<length;i++){
             ht->entries[i] = NULL;
         }
@@ -161,7 +161,7 @@ hash_table_t *init_hashtable(unsigned int (*hash_function)(char *key), unsigned 
     return ht;
 }
 
-void free_hash_table(hash_table_t *ht){
+void free_hash_table(HashTable *ht){
     /* Delete all entries */
     for (int i=0;i<ht->length;i++){
         while (ht->entries[i] != NULL){

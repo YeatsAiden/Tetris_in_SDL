@@ -6,15 +6,16 @@
 #include "event.h"
 #include "list.h"
 
-event_manager_t *event_mg = NULL;
+EventManager *event_mg = NULL;
 
-event_manager_t *init_event_manager(void){
-    event_mg = malloc(sizeof(event_manager_t));
+EventManager *init_event_manager(void){
+    event_mg = malloc(sizeof(EventManager));
 
     if (event_mg == NULL) return NULL;
 
     event_mg->events_header = Init_Array_Header(&event_mg->events_header, SDL_Event, 32);
     event_mg->events_list = Array(event_mg->events_header, SDL_Event);
+    event_mg->inputs = Init_Array_Header(&event_mg->events_header, Inputs, 32);
 
     return event_mg;
 }
@@ -34,53 +35,50 @@ void poll_events(void){
     }
 }
 
-uint16_t recieve_input(){
-    uint16_t inputs = 0;
+void recieve_input(void){
+    InputEvent input_event = {0};
+    SDL_Event event = {0};
 
     for (int i=0;i<event_mg->events_header->count;i++) {
-        SDL_Event event = event_mg->events_list[i];
-
+        event = event_mg->events_list[i];
         switch (event.type) {
-
             case SDL_QUIT:
-                inputs = inputs | (1 << 7);
+                input_event.input = INPUT_QUIT;
                 break;
-
             case SDL_KEYDOWN:
                 switch (event.key.keysym.sym) {
-
                     case SDLK_ESCAPE: 
-                        inputs = inputs | (1 << 7);
+                        input_event.input = INPUT_QUIT;
                         break;
-
                     case SDLK_RIGHT:
-                        inputs = inputs | 1;
+                        input_event.input = INPUT_RIGHT;
                         break;
-
                     case SDLK_UP:
-                        inputs = inputs | (1 << 1);
+                        input_event.input = INPUT_UP;
                         break;
-
                     case SDLK_DOWN:
-                        inputs = inputs | (1 << 2);
+                        input_event.input = INPUT_DOWN;
                         break;
-
                     case SDLK_LEFT:
-                        inputs = inputs | (1 << 3);
+                        input_event.input = INPUT_LEFT;
                         break;
-
                     case SDLK_z:
-                        inputs = inputs | (1 << 4);
+                        input_event.input = INPUT_Z_KEY;
                         break;
-
                     case SDLK_x:
-                        inputs = inputs | (1 << 5);
+                        input_event.input = INPUT_X_KEY;
                         break;
                 }
-                break;
+            break;
+        }
+
+        if (input_event.input != 0) {
+            input_event.time_stamp = SDL_GetPerformanceCounter();
+            append(event_mg->inputs, &input_event);
         }
     }
-
-    return inputs;
 }
 
+InputEvent check_input(Input input_id){
+    
+}

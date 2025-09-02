@@ -24,13 +24,13 @@ int main(int argc, char **argv) {
     init_event_manager();
 
     init_data_manager(7);
-    load_tetromino("./assets/data/T.txt");
-    load_tetromino("./assets/data/O.txt");
-    load_tetromino("./assets/data/L.txt");
-    load_tetromino("./assets/data/J.txt");
-    load_tetromino("./assets/data/Z.txt");
-    load_tetromino("./assets/data/S.txt");
-    load_tetromino("./assets/data/I.txt");
+    load_tetromino_rotations("./assets/data/T.txt");
+    load_tetromino_rotations("./assets/data/O.txt");
+    load_tetromino_rotations("./assets/data/L.txt");
+    load_tetromino_rotations("./assets/data/J.txt");
+    load_tetromino_rotations("./assets/data/Z.txt");
+    load_tetromino_rotations("./assets/data/S.txt");
+    load_tetromino_rotations("./assets/data/I.txt");
 
     init_sprite_manager(8);
     sprite_manager_load_texture(renderer,  "./assets/images/red.bmp");
@@ -44,18 +44,17 @@ int main(int argc, char **argv) {
 
     int FPS = 120;
     double dt = 1.0/FPS, dt_accumulator = 0;
-    unsigned int previous_time = 0, current_time = 0;
-    uint16_t input = 0;
+    Uint64 previous_time = 0, current_time = 0;
 
     init_sack(); 
     int field[FIELD_HEIGHT][FIELD_WIDTH] = {0};
-    tetromino_t current_tetromino = choose_tetromino();
+    Tetromino current_tetromino = choose_tetromino();
     size_t level = 1;
     size_t lines_cleared = 0;
 
-    while(is_done(input)){
+    while(IS_DOWN(input)){
         poll_events();
-        input = recieve_input();
+        recieve_input();
 
         current_time = SDL_GetPerformanceCounter();
         dt_accumulator += (current_time - previous_time) / (float) SDL_GetPerformanceFrequency();
@@ -64,8 +63,10 @@ int main(int argc, char **argv) {
         while(dt_accumulator >= dt){
             if (the_sack->count <= 3) restock_the_sack();
 
-            if (can_tetromino_move(level)){
-                
+            move(&current_tetromino, field);
+
+            if (tetromino_timer(level)){
+
             }
 
             dt_accumulator -= dt;
@@ -73,6 +74,7 @@ int main(int argc, char **argv) {
 
         clear_screen(renderer, NULL, BLACK);
         render_field(renderer, display, field);
+        render_tetromino(renderer, current_tetromino);
 
         render_display(renderer, window, display);
         SDL_RenderPresent(renderer);
@@ -86,5 +88,6 @@ int main(int argc, char **argv) {
     SDL_Quit();
 
     return 0;
+
 }
 

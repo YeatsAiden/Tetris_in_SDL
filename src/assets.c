@@ -7,12 +7,12 @@
 #include "utils.h"
 #include "table.h"
 
-sprite_manager_t *sprite_mg = NULL;
+SpriteManager *sprite_mg = NULL;
 
-data_manager_t *data_mg = NULL;
+DataManager *data_mg = NULL;
 
-sprite_manager_t *init_sprite_manager(unsigned int length){
-    sprite_mg = malloc(sizeof(sprite_manager_t));
+SpriteManager *init_sprite_manager(unsigned int length){
+    sprite_mg = malloc(sizeof(SpriteManager));
 
     if (sprite_mg != NULL){
         sprite_mg->textures = init_hashtable(jenkins_one_at_a_time_hash, length);
@@ -41,8 +41,8 @@ void sprite_manager_delete_texture(char *key){
     hash_table_delete(sprite_mg->textures, key);
 }
 
-data_manager_t *init_data_manager(unsigned int length){
-    data_mg = malloc(sizeof(data_manager_t));
+DataManager *init_data_manager(unsigned int length){
+    data_mg = malloc(sizeof(DataManager));
 
     if (data_mg != NULL){
         data_mg->data = init_hashtable(jenkins_one_at_a_time_hash, length);
@@ -55,23 +55,26 @@ void destroy_data_manager(void){
     free_hash_table(data_mg->data);
 }
 
-void load_tetromino(char *path){
+void load_tetromino_rotations(char *path){
     char *name = get_file_name(path);
 
     FILE *ptr = fopen(path, "r");
 
-    uint32_t *rotations = malloc(4 * sizeof(uint32_t));
+    uint64_t *rotations = malloc(4 * sizeof(uint64_t));
 
     if (rotations == NULL) return;
 
-    uint32_t mask = 0; // I think this is what is supposed to be called :|
+    uint64_t mask = 0; // I think this is what is supposed to be called :|
     int ch, times = 0;
+
+    size_t width = memcmp(name, "I", 1) == 0 ? 5 : 3;
+
     while ((ch = fgetc(ptr)) != EOF){
         if (ch == '\n') {
             times++;
 
-            if ((times % 4 == 0) && (times != 0)){
-                rotations[(times / 4) - 1] = mask;
+            if ((times % width == 0) && (times != 0)){
+                rotations[(times / width) - 1] = mask;
                 mask = 0;
             }
 
