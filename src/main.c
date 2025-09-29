@@ -49,12 +49,10 @@ int main(int argc, char **argv) {
     init_sack(); 
     int field[FIELD_HEIGHT][FIELD_WIDTH] = {0};
     Tetromino current_tetromino = choose_tetromino();
-    size_t level = 1;
-    size_t lines_cleared = 0;
+    size_t level = 1, lines_cleared = 0;
 
-    while(IS_DOWN(input)){
+    while(1){
         poll_events();
-        recieve_input();
 
         current_time = SDL_GetPerformanceCounter();
         dt_accumulator += (current_time - previous_time) / (float) SDL_GetPerformanceFrequency();
@@ -88,6 +86,5 @@ int main(int argc, char **argv) {
     SDL_Quit();
 
     return 0;
-
 }
 

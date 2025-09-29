@@ -51,38 +51,24 @@ void pop(ArrayHeader *header, int index){
 
     if (index < 0) index = count + index;
 
-    if (index == count - 1){
+    if (index < count - 1){
         char *element_to_delete = (char *)arr_ptr + (index * element_size);
-        memcpy(element_to_delete, element_to_delete + 1, (count - index + 1) * element_size);
+        memmove(element_to_delete, element_to_delete + 1, (count - index - 1) * element_size);
     }
 
     header->count--;
 }
 
-int compare
-
 int includes(ArrayHeader *header, void *element){
     int count = header->count;
     int element_size = header->element_size;
     void *arr_ptr = Array_Pointer(header);
-    
-    for (int i=0;i<count;i++){
-        if ( memcmp(((char *)arr_ptr) + (i * element_size), element, element_size) == 0) return 1;
-    }
 
-    return 0;
-}
-
-int find_first(ArrayHeader *header, void *element){
-    int count = header->count;
-    int element_size = header->element_size;
-    void *arr_ptr = Array_Pointer(header);
-    
     for (int i=0;i<count;i++){
         if ( memcmp(((char *)arr_ptr) + (i * element_size), element, element_size) == 0) return i;
     }
 
-    return 0;
+    return -1; // if nothing is found
 }
 
 void reset_array(ArrayHeader *header){
