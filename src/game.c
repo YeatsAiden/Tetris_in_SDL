@@ -1,14 +1,13 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_keycode.h>
+#include <SDL2/SDL_scancode.h>
 #include <math.h>
-#include <stdint.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
-#include "assets.h"
-#include "list.h"
 #include "game.h"
-#include "event.h"
+#include "assets.h"
+#include "input.h"
+#include "list.h"
 
 char *id_to_tetromino[] = { [Z]="Z", [S]="S", [T]="T", [L]="L", [O]="O", [J]="J", [I]="I" }; //By far one of the coolest features C has)
 
@@ -87,7 +86,7 @@ void init_sack(void){
 
         for (int i=0;i<the_sack->length;i++) {
             TetrominoID id = (rand() % the_sack->length) + 1;
-            while (includes(the_sack, &id)) id = (rand() % the_sack->length) + 1;
+            while (includes(the_sack, &id) != -1) id = (rand() % the_sack->length) + 1;
 
             append(the_sack, &id);
         }
@@ -134,6 +133,8 @@ int tetromino_timer(size_t level){
     previous_time = current_time;
     current_time = SDL_GetTicks();
 
+    printf("%d\n", current_time);
+
     return ((double)(current_time - previous_time) / 1000 >= pow(0.8 - ((level-1)*0.007), level-1)) ? 1 : 0;
 }
 
@@ -160,13 +161,17 @@ int check_position(Tetromino *tetromino, Vec2D offset, int field[FIELD_HEIGHT][F
 void move(Tetromino *tetromino, int field[FIELD_HEIGHT][FIELD_WIDTH]){
     int x_velocity = 0;
 
-    if (input & INPUT_RIGHT) {
-        x_velocity += 1;
-    }
-    if (input & INPUT_LEFT) x_velocity -= 1;
+    if (get_key_pressed(SDL_SCANCODE_RIGHT)) x_velocity += 1;
+    if (get_key_pressed(SDL_SCANCODE_LEFT)) x_velocity -= 1;
 
     if (check_position(tetromino, (Vec2D) { .x = x_velocity, .y = 0 }, field)){
         tetromino->position.x += x_velocity;
+    };
+}
+
+void fall(Tetromino *tetromino, int field[FIELD_HEIGHT][FIELD_WIDTH]){
+    if (check_position(tetromino, (Vec2D) { .x = 0, .y = 1 }, field)){
+        tetromino->position.y += 1;
     };
 }
 

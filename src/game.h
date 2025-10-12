@@ -44,6 +44,7 @@ void restock_the_sack(void);
 Tetromino choose_tetromino(void);
 int tetromino_timer(size_t level);
 void move(Tetromino *tetromino, int field[FIELD_HEIGHT][FIELD_WIDTH]);
+void fall(Tetromino *tetromino, int field[FIELD_HEIGHT][FIELD_WIDTH]);
 void render_tetromino(SDL_Renderer *renderer, Tetromino tetromino);
 
 #endif

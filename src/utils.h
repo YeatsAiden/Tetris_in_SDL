@@ -13,6 +13,7 @@ void print_error(char process[]);
 int initialize_everything();
 int create_window(SDL_Window **window, int flags);
 int create_renderer(SDL_Window *window, SDL_Renderer **renderer);
+void quit(SDL_Window *window, SDL_Renderer *renderer);
 
 SDL_Surface *copy_surface(SDL_Surface *surface);
 SDL_Texture *load_bmp_as_texture(SDL_Renderer *renderer, char *path);

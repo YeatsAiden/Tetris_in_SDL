@@ -1,12 +1,15 @@
 #include <SDL2/SDL.h>
+#include <stdio.h>
 #include <time.h>
 #include <stdint.h>
 #include <stdlib.h>
 
 #include "consts.h"
+#include "input.h"
 #include "utils.h"
 #include "assets.h"
 #include "event.h"
+#include "input.h"
 #include "game.h"
 
 int main(int argc, char **argv) {
@@ -22,6 +25,7 @@ int main(int argc, char **argv) {
     SDL_Texture *display = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, DISPLAY_WIDTH, DISPLAY_HEIGHT);
 
     init_event_manager();
+    init_input_manager();
 
     init_data_manager(7);
     load_tetromino_rotations("./assets/data/T.txt");
@@ -51,8 +55,9 @@ int main(int argc, char **argv) {
     Tetromino current_tetromino = choose_tetromino();
     size_t level = 1, lines_cleared = 0;
 
-    while(1){
+    while(!event_mg->quit){
         poll_events();
+        update_keyboard_state();
 
         current_time = SDL_GetPerformanceCounter();
         dt_accumulator += (current_time - previous_time) / (float) SDL_GetPerformanceFrequency();
@@ -64,11 +69,13 @@ int main(int argc, char **argv) {
             move(&current_tetromino, field);
 
             if (tetromino_timer(level)){
-
+                fall(&current_tetromino, field);
             }
 
             dt_accumulator -= dt;
         }
+
+        update_previous_keyboard_state();
 
         clear_screen(renderer, NULL, BLACK);
         render_field(renderer, display, field);
@@ -81,9 +88,8 @@ int main(int argc, char **argv) {
     destroy_sprite_manager();
     destroy_data_manager();
     destroy_event_manager();
-    SDL_DestroyWindow(window);
-    SDL_DestroyRenderer(renderer);
-    SDL_Quit();
+    destroy_input_manager();
+    quit(window, renderer);
 
     return 0;
 }

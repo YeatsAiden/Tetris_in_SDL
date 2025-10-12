@@ -1,5 +1,5 @@
-#ifndef INPUT_H
-#define INPUT_H
+#ifndef EVENT_H
+#define EVENT_H
 
 #include "list.h"
 #include <stdint.h>
@@ -7,6 +7,7 @@
 typedef struct EventManager {
     ArrayHeader *events_header;
     SDL_Event *events_list;
+    uint8_t quit;
 } EventManager;
 
 extern EventManager *event_mg;

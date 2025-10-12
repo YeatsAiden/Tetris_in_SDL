@@ -1,6 +1,6 @@
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_keycode.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 #include "event.h"
@@ -15,6 +15,7 @@ EventManager *init_event_manager(void){
 
     event_mg->events_header = Init_Array_Header(&event_mg->events_header, SDL_Event, 32);
     event_mg->events_list = Array(event_mg->events_header, SDL_Event);
+    event_mg->quit = 0;
 
     return event_mg;
 }
@@ -31,5 +32,6 @@ void poll_events(void){
     while (SDL_PollEvent(&event)) {
         append(event_mg->events_header, &event);
         event_mg->events_list = Array(event_mg->events_header, SDL_Event); //just in case the array is resized
+        if (event.type == SDL_QUIT) event_mg->quit = 1;
     }
 }

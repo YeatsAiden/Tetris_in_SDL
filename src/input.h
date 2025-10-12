@@ -16,7 +16,13 @@ typedef struct KeyboardInput {
     Uint64 time_stamp;
 } KeyboardInput;
 
+extern InputManager *input_mg;
+
 InputManager *init_input_manager(void);
-void input_check(void);
+void destroy_input_manager(void);
+void update_keyboard_state(void);
+void update_previous_keyboard_state(void);
+int get_key_pressed(SDL_Scancode scan_code);
+int get_key_down(SDL_Scancode scan_code);
 
 #endif

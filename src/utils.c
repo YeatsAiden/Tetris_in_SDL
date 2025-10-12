@@ -1,4 +1,5 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_render.h>
 #include <SDL2/SDL_surface.h>
 #include <stdio.h>
 
@@ -40,6 +41,12 @@ int create_renderer(SDL_Window *window, SDL_Renderer **renderer) {
     return 1;
   }
   return 0;
+}
+
+void quit(SDL_Window *window, SDL_Renderer *renderer){
+    SDL_DestroyWindow(window);
+    SDL_DestroyRenderer(renderer);
+    SDL_Quit();
 }
 
 SDL_Surface *copy_surface(SDL_Surface *surface){
