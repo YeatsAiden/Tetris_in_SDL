@@ -60,11 +60,11 @@ void load_tetromino_rotations(char *path){
 
     FILE *ptr = fopen(path, "r");
 
-    uint64_t *rotations = malloc(4 * sizeof(uint64_t));
+    uint32_t *rotations = malloc(4 * sizeof(uint32_t));
 
     if (rotations == NULL) return;
 
-    uint64_t mask = 0; // I think this is what is supposed to be called :|
+    uint32_t mask = 0; // I think this is what is supposed to be called :|
     int ch, times = 0;
 
     size_t width = memcmp(name, "I", 1) == 0 ? 5 : 3;
@@ -73,7 +73,7 @@ void load_tetromino_rotations(char *path){
         if (ch == '\n') {
             times++;
 
-            if ((times % width == 0) && (times != 0)){
+            if (times % width == 0){
                 rotations[(times / width) - 1] = mask;
                 mask = 0;
             }

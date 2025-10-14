@@ -126,16 +126,17 @@ Tetromino choose_tetromino(void){
 }
 
 int tetromino_timer(size_t level){
-    //FIXME: check if type conversion for division is needed
     static Uint32 current_time = 0;
     static Uint32 previous_time = 0;
 
-    previous_time = current_time;
     current_time = SDL_GetTicks();
 
-    printf("%d\n", current_time);
-
-    return ((double)(current_time - previous_time) / 1000 >= pow(0.8 - ((level-1)*0.007), level-1)) ? 1 : 0;
+    if ((double)(current_time - previous_time) / 1000 >= pow(0.8 - ((level-1)*0.007), level-1)) {
+        previous_time = current_time;
+        return 1;
+    } else {
+        return 0;
+    }
 }
 
 int check_position(Tetromino *tetromino, Vec2D offset, int field[FIELD_HEIGHT][FIELD_WIDTH]){
@@ -148,9 +149,9 @@ int check_position(Tetromino *tetromino, Vec2D offset, int field[FIELD_HEIGHT][F
 
     for (int y=0;y<width;y++){
         for (int x=0;x<width;x++){
+            int tetromino_bit = (tetromino->rotations[tetromino->current_rotation] >> ((width - y - 1) * width + (width - x - 1))) & 0b1;
+            if (new_pos.y + y > FIELD_HEIGHT - 1 && tetromino_bit) return 0;
             int field_bit = field[new_pos.y + y][new_pos.x + x];
-            int tetromino_bit = (tetromino->rotations[tetromino->current_rotation] >> (y * width + x)) & 0b1;
-
             if (field_bit != 0 && tetromino_bit == 1) return 0;
         }
     }
