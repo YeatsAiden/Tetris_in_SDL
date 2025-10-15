@@ -10,54 +10,37 @@
 #include "list.h"
 
 char *id_to_tetromino[] = { [Z]="Z", [S]="S", [T]="T", [L]="L", [O]="O", [J]="J", [I]="I" }; //By far one of the coolest features C has)
+char *tetromino_colors[] = {"gray", [Z]="red", [S]="green", [T]="purple", [L]="orange", [O]="yellow", [J]="dark_blue", [I]="light_blue" };
 
 int JLSTZ_tests[4][5][2] = {
-    {{0, 0}, {-1, 0}, {-1, -1}, {0, 2}, {-1, 2}},
-    {{0, 0}, {1, 0}, {1, -1}, {0, 2}, {1, 2}},
+    {{0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}},
     {{0, 0}, {1, 0}, {1, 1}, {0, -2}, {1, -2}},
+    {{0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}},
     {{0, 0}, {-1, 0}, {-1, 1}, {0 ,-2}, {-1, -2}},
 };
 
 int I_tests[4][5][2] = {
-    {{0, 0}, {2, 0}, {-1, 0}, {2, -1}, {-1, 2}},
-    {{0, 0}, {-2, 0}, {1, 0}, {-2, 1}, {1, -2}},
-    {{0, 0}, {1, 0}, {-2, 0}, {1, 2}, {-2, -1}},
-    {{0, 0}, {-1, 0}, {2, 0}, {-1, -2}, {2, 1}},
+    {{0, 0}, {-1, 0}, {2, 0}, {-1, 0}, {2, 0}},
+    {{-1, 0}, {0, 0}, {0, 0}, {0, -1}, {0, 2}},
+    {{-1, -1}, {1, -1}, {-2, -1}, {1, 0}, {-2, 0}},
+    {{0, -1}, {0, -1}, {0, -1}, {0, 1}, {0, -2}},
+};
+
+int O_tests[4][5][2] = {
+    {{0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0},},
+    {{0, 1}, {0, 1}, {0, 1}, {0, 1}, {0, 1},},
+    {{-1, 1}, {-1, 1}, {-1, 1}, {-1, 1}, {-1, 1},},
+    {{-1, 0}, {-1, 0}, {-1, 0}, {-1, 0}, {-1, 0},},
 };
 
 ArrayHeader *the_sack = NULL;
 ArrayHeader *discarded_tetrominos = NULL;
 
-void draw_square(SDL_Renderer *renderer, SDL_Rect *rect, int id){
-            switch (id) {
-                case 0:
-                    SDL_RenderCopy(renderer, sprite_manager_get_texture("gray"), NULL, rect);
-                break;
-                case Z:
-                    SDL_RenderCopy(renderer, sprite_manager_get_texture("red"), NULL, rect);
-                break;
-                case S:
-                    SDL_RenderCopy(renderer, sprite_manager_get_texture("green"), NULL, rect);
-                break;
-                case T:
-                    SDL_RenderCopy(renderer, sprite_manager_get_texture("purple"), NULL, rect);
-                break;
-                case L:
-                    SDL_RenderCopy(renderer, sprite_manager_get_texture("orange"), NULL, rect);
-                break;
-                case O:
-                    SDL_RenderCopy(renderer, sprite_manager_get_texture("yellow"), NULL, rect);
-                break;
-                case J:
-                    SDL_RenderCopy(renderer, sprite_manager_get_texture("dark_blue"), NULL, rect);
-                break;
-                case I:
-                    SDL_RenderCopy(renderer, sprite_manager_get_texture("light_blue"), NULL, rect);
-                break;
-            }
+void draw_square(SDL_Renderer *renderer, SDL_Rect *rect, int id) {
+    SDL_RenderCopy(renderer, sprite_manager_get_texture(tetromino_colors[id]), NULL, rect);
 }
 
-void render_field(SDL_Renderer *renderer, SDL_Texture *target, int field[FIELD_HEIGHT][FIELD_WIDTH]){
+void render_field(SDL_Renderer *renderer, SDL_Texture *target, int field[FIELD_HEIGHT][FIELD_WIDTH]) {
     SDL_SetRenderTarget(renderer, target);
     for(int y=0;y<FIELD_HEIGHT;y++){
         for(int x=0;x<FIELD_WIDTH;x++){
@@ -67,11 +50,11 @@ void render_field(SDL_Renderer *renderer, SDL_Texture *target, int field[FIELD_H
    }
 }
 
-size_t decide_tetromino_width(TetrominoID id){
+size_t decide_tetromino_width(TetrominoID id) {
     return id == I ? 5 : 3;
 }
 
-Tetromino create_tertomino(Vec2D position, TetrominoID id){
+Tetromino create_tertomino(Vec2D position, TetrominoID id) {
     return (Tetromino) {
         .position = position,
         .rotations = get_tetromino_rotations(id_to_tetromino[id]),
@@ -97,7 +80,7 @@ void init_sack(void){
     }
 }
 
-void restock_the_sack(void){
+void restock_the_sack(void) {
     int index = rand() % discarded_tetrominos->count;
 
     TetrominoID *discarded_tetrominos_array = Array(discarded_tetrominos, TetrominoID);
@@ -112,7 +95,7 @@ void restock_the_sack(void){
     }
 }
 
-Tetromino choose_tetromino(void){
+Tetromino choose_tetromino(void) {
     int index = rand() % the_sack->count;
 
     TetrominoID *the_sack_array = Array(the_sack, TetrominoID);
@@ -125,7 +108,7 @@ Tetromino choose_tetromino(void){
     return tetromino;
 }
 
-int tetromino_timer(size_t level){
+int tetromino_timer(size_t level) {
     static Uint32 current_time = 0;
     static Uint32 previous_time = 0;
 
@@ -139,7 +122,7 @@ int tetromino_timer(size_t level){
     }
 }
 
-int check_position(Tetromino *tetromino, Vec2D offset, int field[FIELD_HEIGHT][FIELD_WIDTH]){
+int check_position(Tetromino *tetromino, Vec2D offset, int field[FIELD_HEIGHT][FIELD_WIDTH]) {
     size_t width = decide_tetromino_width(tetromino->id);
 
     Vec2D new_pos = {
@@ -147,8 +130,8 @@ int check_position(Tetromino *tetromino, Vec2D offset, int field[FIELD_HEIGHT][F
         .y = tetromino->position.y + offset.y,
     };
 
-    for (int y=0;y<width;y++){
-        for (int x=0;x<width;x++){
+    for (int y=0;y<width;y++) {
+        for (int x=0;x<width;x++) {
             int tetromino_bit = (tetromino->rotations[tetromino->current_rotation] >> ((width - y - 1) * width + (width - x - 1))) & 0b1;
             if (new_pos.y + y > FIELD_HEIGHT - 1 && tetromino_bit) return 0;
             int field_bit = field[new_pos.y + y][new_pos.x + x];
@@ -159,7 +142,7 @@ int check_position(Tetromino *tetromino, Vec2D offset, int field[FIELD_HEIGHT][F
     return 1;
 }
 
-void move(Tetromino *tetromino, int field[FIELD_HEIGHT][FIELD_WIDTH]){
+void move(Tetromino *tetromino, int field[FIELD_HEIGHT][FIELD_WIDTH]) {
     int x_velocity = 0;
 
     if (get_key_pressed(SDL_SCANCODE_RIGHT)) x_velocity += 1;
@@ -170,18 +153,36 @@ void move(Tetromino *tetromino, int field[FIELD_HEIGHT][FIELD_WIDTH]){
     };
 }
 
-void fall(Tetromino *tetromino, int field[FIELD_HEIGHT][FIELD_WIDTH]){
+void fall(Tetromino *tetromino, int field[FIELD_HEIGHT][FIELD_WIDTH]) {
     if (check_position(tetromino, (Vec2D) { .x = 0, .y = 1 }, field)){
         tetromino->position.y += 1;
     };
 }
 
-void render_tetromino(SDL_Renderer *renderer, Tetromino tetromino){
+void rotate(Tetromino *tetromino, int field[FIELD_HEIGHT][FIELD_WIDTH]) {
+    int rotation_direction = get_key_pressed(SDL_SCANCODE_UP) - get_key_pressed(SDL_SCANCODE_DOWN);
+    int temp_rotation = (tetromino->current_rotation + rotation_direction) % 4;
+
+    int tests[5][2] = {0};
+
+    switch (tetromino->id) {
+        case I:
+        break;
+        case O:
+        break;
+        default:
+    }
+
+    for (int i=0;i<5;i++) {
+    }
+}
+
+void render_tetromino(SDL_Renderer *renderer, Tetromino tetromino) {
     size_t width = decide_tetromino_width(tetromino.id);
 
     for (int y=0;y<width;y++){
         for (int x=0;x<width;x++){
-            int tetromino_bit = (tetromino.rotations[tetromino.current_rotation] >> (y * width + x)) & 0b1;
+            int tetromino_bit = (tetromino.rotations[tetromino.current_rotation] >> ((width - y - 1) * width + (width - x - 1))) & 0b1;
             if (tetromino_bit == 1){
                 SDL_Rect rect = {
                     .x = (tetromino.position.x + x) * TILE_SIZE,
