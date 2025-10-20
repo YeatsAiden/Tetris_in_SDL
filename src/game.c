@@ -161,19 +161,41 @@ void fall(Tetromino *tetromino, int field[FIELD_HEIGHT][FIELD_WIDTH]) {
 
 void rotate(Tetromino *tetromino, int field[FIELD_HEIGHT][FIELD_WIDTH]) {
     int rotation_direction = get_key_pressed(SDL_SCANCODE_UP) - get_key_pressed(SDL_SCANCODE_DOWN);
-    int temp_rotation = (tetromino->current_rotation + rotation_direction) % 4;
+    fprintf(stderr, "%d\n", rotation_direction);
+    if (!rotation_direction) return;
+
+    int new_rotation = (tetromino->current_rotation + rotation_direction) % 4;
 
     int tests[5][2] = {0};
 
     switch (tetromino->id) {
         case I:
+            for (int i=0;i<5;i++) {
+                tests[i][0] = I_tests[tetromino->current_rotation][0] - I_tests[new_rotation][0];
+                tests[i][1] = I_tests[tetromino->current_rotation][1] - I_tests[new_rotation][1];
+            }
         break;
         case O:
+            for (int i=0;i<5;i++) {
+                tests[i][0] = O_tests[tetromino->current_rotation][0] - O_tests[new_rotation][0];
+                tests[i][1] = O_tests[tetromino->current_rotation][1] - O_tests[new_rotation][1];
+            }
         break;
         default:
+            for (int i=0;i<5;i++) {
+                tests[i][0] = JLSTZ_tests[tetromino->current_rotation][0] - JLSTZ_tests[new_rotation][0];
+                tests[i][1] = JLSTZ_tests[tetromino->current_rotation][1] - JLSTZ_tests[new_rotation][1];
+            }
     }
 
+    tetromino->current_rotation = new_rotation;
+
     for (int i=0;i<5;i++) {
+        if (check_position(tetromino, (Vec2D) { .x = tests[i][0], .y = tests[i][1] }, field)) {
+            tetromino->position.x += tests[i][0];
+            tetromino->position.y += tests[i][1];
+            break;
+        }
     }
 }
 

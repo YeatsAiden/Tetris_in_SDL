@@ -67,15 +67,16 @@ int main(int argc, char **argv) {
             if (the_sack->count <= 3) restock_the_sack();
 
             move(&current_tetromino, field);
+            rotate(&current_tetromino, field);
 
             if (tetromino_timer(level)){
                 fall(&current_tetromino, field);
             }
 
             dt_accumulator -= dt;
-        }
 
-        update_previous_keyboard_state();
+            update_previous_keyboard_state();
+        }
 
         clear_screen(renderer, NULL, BLACK);
         render_field(renderer, display, field);
