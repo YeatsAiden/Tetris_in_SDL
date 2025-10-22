@@ -1,4 +1,5 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_events.h>
 #include <stdio.h>
 #include <time.h>
 #include <stdint.h>
@@ -53,7 +54,7 @@ int main(int argc, char **argv) {
     init_sack(); 
     int field[FIELD_HEIGHT][FIELD_WIDTH] = {0};
     Tetromino current_tetromino = choose_tetromino();
-    size_t level = 10, lines_cleared = 0;
+    size_t level = 1, lines_cleared = 0;
 
     while(!event_mg->quit){
         poll_events();

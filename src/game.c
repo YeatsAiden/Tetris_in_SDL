@@ -133,7 +133,7 @@ int check_position(Tetromino *tetromino, Vec2D offset, int field[FIELD_HEIGHT][F
     for (int y=0;y<width;y++) {
         for (int x=0;x<width;x++) {
             int tetromino_bit = (tetromino->rotations[tetromino->current_rotation] >> ((width - y - 1) * width + (width - x - 1))) & 0b1;
-            if (new_pos.y + y > FIELD_HEIGHT - 1 && tetromino_bit) return 0;
+            if ((new_pos.y + y > FIELD_HEIGHT - 1 && tetromino_bit) || ((new_pos.x + x > FIELD_WIDTH - 1) || (new_pos.x + x < 0) && tetromino_bit)) return 0;
             int field_bit = field[new_pos.y + y][new_pos.x + x];
             if (field_bit != 0 && tetromino_bit == 1) return 0;
         }
@@ -161,30 +161,32 @@ void fall(Tetromino *tetromino, int field[FIELD_HEIGHT][FIELD_WIDTH]) {
 
 void rotate(Tetromino *tetromino, int field[FIELD_HEIGHT][FIELD_WIDTH]) {
     int rotation_direction = get_key_pressed(SDL_SCANCODE_UP) - get_key_pressed(SDL_SCANCODE_DOWN);
-    fprintf(stderr, "%d\n", rotation_direction);
+
     if (!rotation_direction) return;
 
     int new_rotation = (tetromino->current_rotation + rotation_direction) % 4;
+
+    if (new_rotation < 0) new_rotation = 4 + new_rotation;
 
     int tests[5][2] = {0};
 
     switch (tetromino->id) {
         case I:
             for (int i=0;i<5;i++) {
-                tests[i][0] = I_tests[tetromino->current_rotation][0] - I_tests[new_rotation][0];
-                tests[i][1] = I_tests[tetromino->current_rotation][1] - I_tests[new_rotation][1];
+                tests[i][0] = I_tests[tetromino->current_rotation][i][0] - I_tests[new_rotation][i][0];
+                tests[i][1] = I_tests[tetromino->current_rotation][i][1] - I_tests[new_rotation][i][1];
             }
         break;
         case O:
             for (int i=0;i<5;i++) {
-                tests[i][0] = O_tests[tetromino->current_rotation][0] - O_tests[new_rotation][0];
-                tests[i][1] = O_tests[tetromino->current_rotation][1] - O_tests[new_rotation][1];
+                tests[i][0] = O_tests[tetromino->current_rotation][i][0] - O_tests[new_rotation][i][0];
+                tests[i][1] = O_tests[tetromino->current_rotation][i][1] - O_tests[new_rotation][i][1];
             }
         break;
         default:
             for (int i=0;i<5;i++) {
-                tests[i][0] = JLSTZ_tests[tetromino->current_rotation][0] - JLSTZ_tests[new_rotation][0];
-                tests[i][1] = JLSTZ_tests[tetromino->current_rotation][1] - JLSTZ_tests[new_rotation][1];
+                tests[i][0] = JLSTZ_tests[tetromino->current_rotation][i][0] - JLSTZ_tests[new_rotation][i][0];
+                tests[i][1] = JLSTZ_tests[tetromino->current_rotation][i][1] - JLSTZ_tests[new_rotation][i][1];
             }
     }
 

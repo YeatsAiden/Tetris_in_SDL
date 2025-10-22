@@ -1,7 +1,6 @@
 #include <SDL2/SDL.h>
 #include "input.h"
 #include <SDL2/SDL_scancode.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -35,6 +34,7 @@ void update_keyboard_state(void) {
 
 void update_previous_keyboard_state(void) {
     memcpy(input_mg->prev_keyboard_state, input_mg->current_keyboard_state, input_mg->numkeys);
+    memset(input_mg->current_keyboard_state, 0, input_mg->numkeys);
 }
 
 int get_key_down(SDL_Scancode scan_code) {
