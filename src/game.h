@@ -36,16 +36,19 @@ typedef struct Tetromino {
 extern ArrayHeader *the_sack;
 extern ArrayHeader *discarded_tetrominos;
 
-void render_field(SDL_Renderer *renderer, SDL_Texture *target, int field[FIELD_HEIGHT][FIELD_WIDTH]);
-size_t decide_tetromino_width(TetrominoID id);
-Tetromino create_tertomino(Vec2D position, TetrominoID id);
 void init_sack(void);
 void restock_the_sack(void);
+
+size_t decide_tetromino_width(TetrominoID id);
+Tetromino create_tertomino(Vec2D position, TetrominoID id);
 Tetromino choose_tetromino(void);
+
 int tetromino_timer(size_t level);
+void fall(Tetromino *tetromino, int field[FIELD_HEIGHT][FIELD_WIDTH]);
 void move(Tetromino *tetromino, int field[FIELD_HEIGHT][FIELD_WIDTH]);
 void rotate(Tetromino *tetromino, int field[FIELD_HEIGHT][FIELD_WIDTH]);
-void fall(Tetromino *tetromino, int field[FIELD_HEIGHT][FIELD_WIDTH]);
+
 void render_tetromino(SDL_Renderer *renderer, Tetromino tetromino);
+void render_field(SDL_Renderer *renderer, SDL_Texture *target, int field[FIELD_HEIGHT][FIELD_WIDTH]);
 
 #endif

@@ -3,6 +3,7 @@
 #include <SDL2/SDL_scancode.h>
 #include <math.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "game.h"
 #include "assets.h"
@@ -133,7 +134,7 @@ int check_position(Tetromino *tetromino, Vec2D offset, int field[FIELD_HEIGHT][F
     for (int y=0;y<width;y++) {
         for (int x=0;x<width;x++) {
             int tetromino_bit = (tetromino->rotations[tetromino->current_rotation] >> ((width - y - 1) * width + (width - x - 1))) & 0b1;
-            if ((new_pos.y + y > FIELD_HEIGHT - 1 && tetromino_bit) || ((new_pos.x + x > FIELD_WIDTH - 1) || (new_pos.x + x < 0) && tetromino_bit)) return 0;
+            if ((new_pos.y + y > FIELD_HEIGHT - 1 && tetromino_bit) || (((new_pos.x + x > FIELD_WIDTH - 1) || (new_pos.x + x < 0)) && tetromino_bit)) return 0;
             int field_bit = field[new_pos.y + y][new_pos.x + x];
             if (field_bit != 0 && tetromino_bit == 1) return 0;
         }
@@ -159,6 +160,19 @@ void fall(Tetromino *tetromino, int field[FIELD_HEIGHT][FIELD_WIDTH]) {
     };
 }
 
+int *decide_tetromino_tests(TetrominoID id) {
+        switch (id) {
+        case I:
+            return (int *)I_tests;
+        break;
+        case O:
+            return (int *)O_tests;
+        break;
+        default:
+            return (int *)JLSTZ_tests;
+    }
+}
+
 void rotate(Tetromino *tetromino, int field[FIELD_HEIGHT][FIELD_WIDTH]) {
     int rotation_direction = get_key_pressed(SDL_SCANCODE_UP) - get_key_pressed(SDL_SCANCODE_DOWN);
 
@@ -168,34 +182,22 @@ void rotate(Tetromino *tetromino, int field[FIELD_HEIGHT][FIELD_WIDTH]) {
 
     if (new_rotation < 0) new_rotation = 4 + new_rotation;
 
-    int tests[5][2] = {0};
+    int offsets[5][2] = {0};
 
-    switch (tetromino->id) {
-        case I:
-            for (int i=0;i<5;i++) {
-                tests[i][0] = I_tests[tetromino->current_rotation][i][0] - I_tests[new_rotation][i][0];
-                tests[i][1] = I_tests[tetromino->current_rotation][i][1] - I_tests[new_rotation][i][1];
-            }
-        break;
-        case O:
-            for (int i=0;i<5;i++) {
-                tests[i][0] = O_tests[tetromino->current_rotation][i][0] - O_tests[new_rotation][i][0];
-                tests[i][1] = O_tests[tetromino->current_rotation][i][1] - O_tests[new_rotation][i][1];
-            }
-        break;
-        default:
-            for (int i=0;i<5;i++) {
-                tests[i][0] = JLSTZ_tests[tetromino->current_rotation][i][0] - JLSTZ_tests[new_rotation][i][0];
-                tests[i][1] = JLSTZ_tests[tetromino->current_rotation][i][1] - JLSTZ_tests[new_rotation][i][1];
-            }
+    int tests[5][4][2] = {0};
+    memcpy(tests, decide_tetromino_tests(tetromino->id), 5 * 4 * 2); // OOOOHHH MaGiC NUmbERsS
+
+    for (int i=0;i<5;i++) {
+        offsets[i][0] = tests[tetromino->current_rotation][i][0] - tests[new_rotation][i][0];
+        offsets[i][1] = tests[tetromino->current_rotation][i][1] - tests[new_rotation][i][1];
     }
 
     tetromino->current_rotation = new_rotation;
 
     for (int i=0;i<5;i++) {
-        if (check_position(tetromino, (Vec2D) { .x = tests[i][0], .y = tests[i][1] }, field)) {
-            tetromino->position.x += tests[i][0];
-            tetromino->position.y += tests[i][1];
+        if (check_position(tetromino, (Vec2D) { .x = offsets[i][0], .y = offsets[i][1] }, field)) {
+            tetromino->position.x += offsets[i][0];
+            tetromino->position.y += offsets[i][1];
             break;
         }
     }
