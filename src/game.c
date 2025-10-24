@@ -174,7 +174,7 @@ int *decide_tetromino_tests(TetrominoID id) {
 }
 
 void rotate(Tetromino *tetromino, int field[FIELD_HEIGHT][FIELD_WIDTH]) {
-    int rotation_direction = get_key_pressed(SDL_SCANCODE_UP) - get_key_pressed(SDL_SCANCODE_DOWN);
+    int rotation_direction = get_key_pressed(SDL_SCANCODE_X) - get_key_pressed(SDL_SCANCODE_Z);
 
     if (!rotation_direction) return;
 
@@ -183,9 +183,8 @@ void rotate(Tetromino *tetromino, int field[FIELD_HEIGHT][FIELD_WIDTH]) {
     if (new_rotation < 0) new_rotation = 4 + new_rotation;
 
     int offsets[5][2] = {0};
-
-    int tests[5][4][2] = {0};
-    memcpy(tests, decide_tetromino_tests(tetromino->id), 5 * 4 * 2); // OOOOHHH MaGiC NUmbERsS
+    int tests[4][5][2] = {0};
+    memcpy(tests, decide_tetromino_tests(tetromino->id), 5 * 4 * 2 * sizeof(int)); // OOOOHHH MaGiC NUmbERsS
 
     for (int i=0;i<5;i++) {
         offsets[i][0] = tests[tetromino->current_rotation][i][0] - tests[new_rotation][i][0];
@@ -198,9 +197,11 @@ void rotate(Tetromino *tetromino, int field[FIELD_HEIGHT][FIELD_WIDTH]) {
         if (check_position(tetromino, (Vec2D) { .x = offsets[i][0], .y = offsets[i][1] }, field)) {
             tetromino->position.x += offsets[i][0];
             tetromino->position.y += offsets[i][1];
-            break;
+            return;
         }
     }
+
+    tetromino->current_rotation -= rotation_direction;
 }
 
 void render_tetromino(SDL_Renderer *renderer, Tetromino tetromino) {
